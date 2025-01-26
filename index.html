@@ -6,9 +6,32 @@
     <meta name="description" content="model-viewer template">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link type="text/css" href="./styles.css" rel="stylesheet">
+    <style>
+      #add-model-button {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 50px;
+        height: 50px;
+        background-color: orange;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        z-index: 10;
+        cursor: pointer;
+      }
+      #add-model-button:hover {
+        opacity: 0.8;
+      }
+    </style>
   </head>
   <body>
-    <!-- <model-viewer> HTML element -->
+    <!-- Narancssárga kör gomb -->
+    <div id="add-model-button" title="Add new model">+</div>
+
+    <!-- AR Model Viewer -->
     <model-viewer 
       id="modelViewer"
       src="./szex2.glb" 
@@ -18,7 +41,7 @@
       tone-mapping="neutral" 
       poster="poster.webp" 
       shadow-intensity="1" 
-      camera-orbit="0deg 0deg 1.5m" 
+      camera-orbit="0deg 90deg 2.5m" 
       interaction-prompt="none">
       
       <div class="progress-bar hide" slot="progress-bar">
@@ -35,25 +58,45 @@
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
     <script>
       const modelViewer = document.querySelector("#modelViewer");
+      const addModelButton = document.querySelector("#add-model-button");
+      let modelIndex = 0;
 
-      // Define scale limits
-      const minScale = 1; // Original size
-      const maxScale = 2; // Double the size
+      // Event listener for the "Add New Model" button
+      addModelButton.addEventListener("click", () => {
+        if (!modelViewer.xrSession) {
+          alert("Please enter AR mode first!");
+          return;
+        }
 
-      modelViewer.addEventListener('scene-graph-ready', () => {
-        const model = modelViewer.model;
-        const root = model.modelContainer; // Access the root node of the model
-        
-        // Monitor scale changes
-        modelViewer.addEventListener('camera-change', () => {
-          const scale = root.scale.x; // Assuming uniform scaling
+        // Clone the model-viewer element
+        const newModelViewer = document.createElement("model-viewer");
+        newModelViewer.src = "./szex2.glb"; // Path to the 3D model
+        newModelViewer.cameraControls = true; // Enable controls for the new model
+        newModelViewer.shadowIntensity = "1";
+        newModelViewer.toneMapping = "neutral";
+        newModelViewer.interactionPrompt = "none";
+        newModelViewer.setAttribute("ar-placement", "tap"); // Allow placement on tap
+        newModelViewer.setAttribute("ar", "");
+        newModelViewer.id = `model-${++modelIndex}`;
 
-          if (scale > maxScale) {
-            root.scale.set(maxScale, maxScale, maxScale);
-          } else if (scale < minScale) {
-            root.scale.set(minScale, minScale, minScale);
+        // Style and append the new model
+        newModelViewer.style.position = "absolute";
+        newModelViewer.style.top = "0";
+        newModelViewer.style.left = "0";
+        newModelViewer.style.width = "100%";
+        newModelViewer.style.height = "100%";
+
+        document.body.appendChild(newModelViewer);
+
+        // Disable controls for the previous models
+        for (let i = 0; i < modelIndex; i++) {
+          const oldModel = document.querySelector(`#model-${i}`);
+          if (oldModel) {
+            oldModel.cameraControls = false;
           }
-        });
+        }
+
+        console.log(`New model added: model-${modelIndex}`);
       });
     </script>
   </body>
