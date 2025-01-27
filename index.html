@@ -34,14 +34,14 @@
     <!-- AR Model Viewer -->
     <model-viewer 
       id="modelViewer"
-      src="./szex90.glb" 
+      src="./szex45.glb" 
       ar 
       ar-modes="webxr scene-viewer quick-look" 
       camera-controls 
       tone-mapping="neutral" 
       poster="poster.webp" 
       shadow-intensity="1" 
-      camera-orbit="0deg 0deg 0.5m" 
+      camera-orbit="0deg 90deg 0.5m" 
       interaction-prompt="none">
       
       <div class="progress-bar hide" slot="progress-bar">
@@ -70,7 +70,7 @@
 
         // Clone the model-viewer element
         const newModelViewer = document.createElement("model-viewer");
-        newModelViewer.src = "./szex90.glb"; // Path to the 3D model
+        newModelViewer.src = "./szex45.glb"; // Path to the 3D model
         newModelViewer.cameraControls = true; // Enable controls for the new model
         newModelViewer.shadowIntensity = "1";
         newModelViewer.toneMapping = "neutral";
